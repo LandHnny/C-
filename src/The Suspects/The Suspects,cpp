@@ -1,0 +1,84 @@
+/*并查集
+将n个物品归于不同集合中，不同集合中的物品绝对没有关系。
+应用：
+1.关系网，道路是否连通
+2.是否感染
+3.是否是同一个老大的组织
+*/
+
+#include<stdio.h>
+#include<iostream>
+using namespace std;
+
+//stu[max]保存每个人的boss编号，num[max]是本题特有的保存BOSS的小弟数
+int stu[30000],num[30000],n,m;
+
+//a[max]是本题特有的输入过程中的数。
+int a[30000];
+
+//用于恢复初始值
+void init()
+{
+	for(int i = 0;i<n;i++)
+	{
+		stu[i] = i;
+		num[i] = 1;
+	}
+	return;
+}
+
+//用于查找a的boss
+int boss(int a)
+{
+	if(stu[a]==a)
+	{
+		return a;
+	}
+	else
+	{
+		stu[a] = boss(stu[a]);//使找到的人都归入同一个boss旗下，避免过多的层级关系。
+		return stu[a];
+	}
+}
+
+//用于将a,b两人归入同一伙人
+void find(int a,int b)
+{
+	int ia = boss(a),ib = boss(b);
+	if(ia==ib)
+	{
+		return;
+	}
+	else
+	{
+		stu[ia] = ib;
+		num[ib] = num[ia] + num[ib];
+		return;
+	}
+}
+
+int main()
+{
+	scanf("%d%d",&n,&m);
+	while(n||m)
+	{
+		init();
+		while(m--)
+		{
+			int k;
+			scanf("%d",&k);
+			for(int i = 0;i<k;i++)
+			{
+				scanf("%d",&a[i]);
+			}
+			for(int i = 0;i<k-1;i++)
+			{
+				find(a[i],a[i+1]);
+			}
+		}
+		int ans = num[boss(0)];
+		printf("%d\n",ans);
+		scanf("%d%d",&n,&m);
+	}
+	return 0;
+} 
